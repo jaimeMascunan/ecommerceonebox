@@ -5,7 +5,6 @@ import com.example.ecommerceonebox.model.Product;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +28,7 @@ public class CartRepository {
         return cartsMap.get(id);
     }
 
-    public Cart addProductToCart(int id, Product product) {
+    public Cart addProductToCart(int id, HashMap<Integer, Product> product) {
         Cart cart = cartsMap.get(id);
         cart.addProduct(product);
         return cart;
@@ -47,12 +46,6 @@ public class CartRepository {
         return cart;
     }
 
-    public Cart deleteAllProductsFromCart(int id) {
-        Cart cart = cartsMap.get(id);
-        cart.setProducts(new HashMap<>());
-        return cart;
-    }
-
     public Cart deleteCart(int cartId)  {
         Cart cart = cartsMap.get(cartId);
         cartsMap.remove(cartId);
@@ -61,11 +54,7 @@ public class CartRepository {
 
     public void removeInactiveCarts() {
         long currentTime = System.currentTimeMillis();
-        for (Map.Entry<Integer, Cart> entry : cartsMap.entrySet()) {
-            Cart cart = entry.getValue();
-            if (currentTime - cart.getLastAccessTime() > TimeUnit.MINUTES.toMillis(10)) {
-                cartsMap.remove(entry.getKey());
-            }
-        }
+        cartsMap.entrySet().removeIf(entry -> currentTime - entry.getValue().getLastAccessTime() > TimeUnit.MINUTES.toMillis(10));
     }
+
 }

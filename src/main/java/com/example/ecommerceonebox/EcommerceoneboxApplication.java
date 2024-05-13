@@ -2,16 +2,14 @@ package com.example.ecommerceonebox;
 
 import com.example.ecommerceonebox.model.Cart;
 import com.example.ecommerceonebox.model.Product;
-import com.example.ecommerceonebox.service.CartService;
+import com.example.ecommerceonebox.repository.CartRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 import java.util.stream.IntStream;
 
 @SpringBootApplication
@@ -27,18 +25,23 @@ public class EcommerceoneboxApplication {
 	}
 
 	@Bean
-	CommandLineRunner runner(CartService cartService) {
+	CommandLineRunner runner(CartRepository cartRepository) {
 		return args -> {
-			Cart cart = cartService.createCart();
-			IntStream.rangeClosed(1, 30)
-					.mapToObj(i -> {
+			Cart cart = cartRepository.createCart();
+			// Construir un mapa de productos
+			HashMap<Integer, Product> productMap = new HashMap<>();
+			IntStream.rangeClosed(1, 5)
+					.forEach(i -> {
 						Product product = new Product();
 						product.setId(i);
-						product.setDescription("Product" + i);
-						product.setAmount(10 * i);
-						return product;
-					})
-					.forEach(product -> cartService.addProductToCart(cart.getId(), product));
+						product.setDescription("Product random" + i);
+						product.setAmount(10);
+						productMap.put(i, product);
+					});
+
+
+			// Añadir el mapa de productos al carrito
+			cartRepository.addProductToCart(cart.getId(), productMap);
 		};
 	}
 

@@ -3,8 +3,6 @@ package com.example.ecommerceonebox;
 import com.example.ecommerceonebox.controller.CartController;
 import com.example.ecommerceonebox.dto.CartDTO;
 import com.example.ecommerceonebox.dto.ProductDTO;
-import com.example.ecommerceonebox.model.Cart;
-import com.example.ecommerceonebox.model.Product;
 import com.example.ecommerceonebox.service.CartServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -43,13 +40,10 @@ class ECommerceOneBoxApplicationTests {
 	@Test
 	void testListAllCarts() {
 		// Mocking the cart data
-		HashMap<Integer, Cart> carts = new HashMap<>();
-		carts.put(1, new Cart(1, new HashMap<>(), System.currentTimeMillis()));
-		when(cartService.getAllCarts()).thenReturn(carts);
-
-		// Mocking the mapping from Cart to CartDTO
+		Map<Integer, CartDTO> carts = new HashMap<>();
 		CartDTO cartDTO = new CartDTO();
-		when(modelMapper.map(any(Cart.class), eq(CartDTO.class))).thenReturn(cartDTO);
+		carts.put(1, cartDTO);
+		when(cartService.getAllCarts()).thenReturn(carts);
 
 		// Calling the controller method
 		Map<Integer, CartDTO> result = cartController.listAllCarts();
@@ -62,15 +56,14 @@ class ECommerceOneBoxApplicationTests {
 	@Test
 	void testCreateCart() {
 		// Mocking the cart creation
-		Cart cart = new Cart(1, new HashMap<>(), System.currentTimeMillis());
-		when(cartService.createCart()).thenReturn(cart);
-
-		// Mocking the mapping from Cart to CartDTO
-		CartDTO cartDTO = new CartDTO();
-		when(modelMapper.map(cart, CartDTO.class)).thenReturn(cartDTO);
+		ProductDTO productDTO = new ProductDTO(1, "Random", 10);
+		HashMap<Integer, ProductDTO> productMap = new HashMap<>();
+		productMap.put(productDTO.getId(), productDTO);
+		CartDTO cartDTO = new CartDTO(1, new HashMap<>());
+		when(cartService.createCart(productMap)).thenReturn(cartDTO);
 
 		// Calling the controller method
-		ResponseEntity<CartDTO> response = cartController.createCart();
+		ResponseEntity<CartDTO> response = cartController.createCart(productMap);
 
 		// Verifying the response
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -80,12 +73,8 @@ class ECommerceOneBoxApplicationTests {
 	@Test
 	void testGetCartById() {
 		// Mocking the cart retrieval
-		Cart cart = new Cart(1, new HashMap<>(), System.currentTimeMillis());
-		when(cartService.getCartInformation(1)).thenReturn(cart);
-
-		// Mocking the mapping from Cart to CartDTO
-		CartDTO cartDTO = new CartDTO();
-		when(modelMapper.map(cart, CartDTO.class)).thenReturn(cartDTO);
+		CartDTO cartDTO = new CartDTO(1, new HashMap<>());
+		when(cartService.getCartInformation(1)).thenReturn(cartDTO);
 
 		// Calling the controller method
 		ResponseEntity<CartDTO> response = cartController.getCartById(1);
@@ -98,20 +87,15 @@ class ECommerceOneBoxApplicationTests {
 	@Test
 	void testAddProductToCart() {
 		// Mocking the product addition to cart
-		ProductDTO productDTO = new ProductDTO();
-		Product product = new Product();
-		Cart cart = new Cart(1, new HashMap<>(), System.currentTimeMillis());
-		when(cartService.addProductToCart(1, product)).thenReturn(cart);
+		ProductDTO productDTO = new ProductDTO(1, "Random", 10);
+		HashMap<Integer, ProductDTO> productDTOMap = new HashMap<>();
+		productDTOMap.put(productDTO.getId(), productDTO);
 
-		// Mocking the mapping from Product to ProductDTO with specific arguments
-		when(modelMapper.map(productDTO, Product.class)).thenReturn(product);
-
-		// Mocking the mapping from Cart to CartDTO
-		CartDTO cartDTO = new CartDTO();
-		when(modelMapper.map(cart, CartDTO.class)).thenReturn(cartDTO);
+		CartDTO cartDTO = new CartDTO(1, new HashMap<>());
+		when(cartService.addProductToCart(1, productDTOMap)).thenReturn(cartDTO);
 
 		// Calling the controller method
-		ResponseEntity<CartDTO> response = cartController.addProductToCart(1, productDTO);
+		ResponseEntity<?> response = cartController.addProductToCart(1, productDTOMap);
 
 		// Verifying the response
 		assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -121,17 +105,9 @@ class ECommerceOneBoxApplicationTests {
 	@Test
 	void testUpdateProductInCart() {
 		// Mocking the product update in cart
-		ProductDTO productDTO = new ProductDTO();
-		Product product = new Product();
-		Cart cart = new Cart(1, new HashMap<>(), System.currentTimeMillis());
-		when(cartService.updateProductFromCart(1, product)).thenReturn(cart);
-
-		// Mocking the mapping from Product to ProductDTO with specific arguments
-		when(modelMapper.map(productDTO, Product.class)).thenReturn(product);
-
-		// Mocking the mapping from Cart to CartDTO
-		CartDTO cartDTO = new CartDTO();
-		when(modelMapper.map(cart, CartDTO.class)).thenReturn(cartDTO);
+		ProductDTO productDTO = new ProductDTO(1, "Random", 10);
+		CartDTO cartDTO = new CartDTO(1, new HashMap<>());
+		when(cartService.updateProductFromCart(1, productDTO)).thenReturn(cartDTO);
 
 		// Calling the controller method
 		ResponseEntity<CartDTO> response = cartController.updateProductInCart(1, productDTO);
@@ -144,17 +120,9 @@ class ECommerceOneBoxApplicationTests {
 	@Test
 	void testDeleteProductFromCart() {
 		// Mocking the product deletion from cart
-		ProductDTO productDTO = new ProductDTO();
-		Product product = new Product();
-		Cart cart = new Cart(1, new HashMap<>(), System.currentTimeMillis());
-		when(cartService.deleteProductFromCart(1, product)).thenReturn(cart);
-
-		// Mocking the mapping from Product to ProductDTO with specific arguments
-		when(modelMapper.map(productDTO, Product.class)).thenReturn(product);
-
-		// Mocking the mapping from Cart to CartDTO
-		CartDTO cartDTO = new CartDTO();
-		when(modelMapper.map(cart, CartDTO.class)).thenReturn(cartDTO);
+		ProductDTO productDTO = new ProductDTO(1, "Random", 10);
+		CartDTO cartDTO = new CartDTO(1, new HashMap<>());
+		when(cartService.deleteProductFromCart(1, productDTO)).thenReturn(cartDTO);
 
 		// Calling the controller method
 		ResponseEntity<CartDTO> response = cartController.deleteProductFromCart(1, productDTO);
@@ -167,12 +135,8 @@ class ECommerceOneBoxApplicationTests {
 	@Test
 	void testDeleteCart() {
 		// Mocking the cart deletion
-		Cart cart = new Cart(1, new HashMap<>(), System.currentTimeMillis());
-		when(cartService.deleteCart(1)).thenReturn(cart);
-
-		// Mocking the mapping from Cart to CartDTO
-		CartDTO cartDTO = new CartDTO();
-		when(modelMapper.map(cart, CartDTO.class)).thenReturn(cartDTO);
+		CartDTO cartDTO = new CartDTO(1, new HashMap<>());
+		when(cartService.deleteCart(1)).thenReturn(cartDTO);
 
 		// Calling the controller method
 		ResponseEntity<CartDTO> response = cartController.deleteCart(1);

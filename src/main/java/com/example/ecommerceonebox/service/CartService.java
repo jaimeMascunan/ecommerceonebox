@@ -1,27 +1,27 @@
 package com.example.ecommerceonebox.service;
 
-import com.example.ecommerceonebox.model.Cart;
-import com.example.ecommerceonebox.model.Product;
+import com.example.ecommerceonebox.dto.CartDTO;
+import com.example.ecommerceonebox.dto.ProductDTO;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public interface CartService {
 
-    HashMap<Integer, Cart> getAllCarts();
+    Map<Integer, CartDTO> getAllCarts();
 
-    Cart createCart();
+    CartDTO createCart(HashMap<Integer,ProductDTO> productDTOs);
 
-    Cart getCartInformation(int cartId);
+    CartDTO getCartInformation(int cartId);
 
-    Cart addProductToCart(int cartId, Product product);
+    CartDTO addProductToCart(int cartId, HashMap<Integer,ProductDTO> productDTOs);
 
-    Cart updateProductFromCart(int cartId, Product product);
+    CartDTO updateProductFromCart(int cartId, ProductDTO productDTO);
 
-    Cart deleteProductFromCart(int cartId, Product product);
+    CartDTO deleteProductFromCart(int cartId, ProductDTO productDTO);
 
-    Cart deleteAllProductsFromCart(int cartId);
-
-    Cart deleteCart(int cartId);
+    CartDTO deleteCart(int cartId);
 
     void deleteInactiveCarts();
+
 }
